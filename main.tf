@@ -78,11 +78,11 @@ resource "vsphere_virtual_machine" "vm" {
       dns_server_list = each.value.dns_servers != null ? each.value.dns_servers : null
 
       dynamic "network_interface" {
-        for_each = each.value.ip_address != null ? each.value.ip_address : null
+        for_each = each.value.ip_address != null ? each.value.ip_address : []
         iterator = network
         content {
-          ipv4_address = split("/", each.value.ip_address[network.key])[0]
-          ipv4_netmask = split("/", each.value.ip_address[network.key])[1]
+          ipv4_address = each.value.ip_address != null ? split("/", each.value.ip_address[network.key])[0] : null
+          ipv4_netmask = each.value.ip_address != null ? split("/", each.value.ip_address[network.key])[1] : null
         }
       }
     }
