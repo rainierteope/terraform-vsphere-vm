@@ -34,23 +34,32 @@ module "module_name" {    # Module name can be anything you want
   cluster         = (Required) The cluster where the VM will reside in.
   network         = (Required) The port group where the VM nics will be attached to by default.
   template        = (Required) The name of the virtual machine template.
-  vm_config       = (Required) The configuration of each virtual machine. The parameters are size, disks, and ip.
-
   windows_image   = (Optional) Set this variable to true if the template is a windows image. Defaults to false.
-  hot_add_enabled = (Optional) Set this variable to true if cpu and memory hot-add should be enabled. Defaults to false.
-  dns_servers     = (Optional) List of DNS servers which the VMs will use. Defaults to an empty list [].
-  gateway         = (Optional) The default IPv4 gateway for your VMs.
-  domain          = (Optional) The domain of the VM.
+  folder          = (Optional) The folder where the virtual machines will be stored.
+  vm_config       = (Required) The configuration of each virtual machine. 
+
+  vm_config parameters:
+  disks           = (Required) List of virtual disks sizes.
+  size            = (Optional) The size of the virtual machine. Defaults to small if not set.
+  ip              = (Optional) List of ip addresses and subnet mask in cidr notation. Defaults to 1 network interface if not set.
+  hot_add_enabled = (Optional) Set this parameter to true if cpu and memory hot-add should be enabled. Defaults to false if not set.
+  dns_servers     = (Optional) List of DNS servers which the VMs will use. Defaults to an empty list [] if not set.
+  gateway         = (Optional) The default IPv4 gateway for your VMs. Defaults to "" if not set.
+  domain          = (Optional) The domain of the VM. Defaults to "" if not set.
 }
 ```
 
-Example vm_config block
+Example vm_config block with all parameters defined
 ```hcl
 vm_config = {
-  vm01 = {                         # VM Name
-    size = "medium"                # Size of the VM. Check the available sizes below.
-    disks = [50, 200]              # A list of disks sizes
-    ip    = ["192.168.0.1/24"]     # A list of ip addresses with subnet mask in cidr notation
+  vm01 = {
+    size            = "medium"                              # Size of the VM
+    disks           = [50, 100]                             # List of disks sizes
+    ip              = ["192.168.200.170/24", ""]            # List of IP addresses, set to "" for dhcp
+    domain          = "automation.com"                      # Domain of the VM
+    gateway         = "192.168.200.1"                       # Default gateway of the VM
+    dns_servers     = ["192.168.200.200", "8.8.8.8"]        # List of DNS servers for the VM
+    hot_add_enabled = true                                  # Enable cpu and memory hot-add for the VM
   }
 }
 ```
@@ -62,25 +71,29 @@ module "module_name" {
   datastore       = "Prod-Datastore01"
   cluster         = "AutomationCluster"
   network         = "VM Network"
+  folder          = "terraform-managed"
   template        = "RHLSLAB"
+  windows_image   = false
   vm_config       = {
     rhelvm01 = {
-      size  = "small"
-      disks = [50, 100]                                       # 2 disks
-      ip    = ["192.168.200.171/24", "192.168.200.172/24"]    # 2 network interfaces
+      size            = "medium"                              # Size of the VM
+      disks           = [50, 100]                             # List of disks sizes
+      ip              = ["192.168.200.170/24", ""]            # List of IP addresses, set to "" for dhcp
+      domain          = "automation.com"                      # Domain of the VM
+      gateway         = "192.168.200.1"                       # Default gateway of the VM
+      dns_servers     = ["192.168.200.200", "8.8.8.8"]        # List of DNS servers for the VM
+      hot_add_enabled = true                                  # Enable cpu and memory hot-add for the VM
     }
-    rhelvm02 = {
-      size  = "medium"
-      disks = [100]                                            # 1 disk
-      ip    = ["192.168.200.173/24"]                           # 1 network interface 
+    rhelvm01 = {
+      size            = "large"                               # Size of the VM
+      disks           = [100, 200]                            # List of disks sizes
+      ip              = ["", ""]                              # List of IP addresses, set to "" for dhcp
+      domain          = "automation.com"                      # Domain of the VM
+      gateway         = "192.168.200.1"                       # Default gateway of the VM
+      dns_servers     = ["192.168.200.200", "8.8.8.8"]        # List of DNS servers for the VM
+      hot_add_enabled = true                                  # Enable cpu and memory hot-add for the VM
     }
   }
-
-  windows_image   = false
-  hot_add_enabled = true
-  dns_servers     = ["192.168.200.200", "8.8.8.8"]
-  gateway         = "192.168.200.1"
-  domain          = "automation.com"
 }
 ```
 
@@ -93,15 +106,12 @@ module "module_name" {
   network         = "VM Network"
   template        = "RHLSLAB"
   vm_config       = {
-    rhelvm01 = {    
-      size  = "small"
-      disks = [50, 100]    # 2 disks
-      ip    = ["", ""]     # 2 network interfaces
+    rhelvm01 = {       # Small VM with 1 disk and 1 network interface
+      disks = [50]     
     }
-    rhelvm02 = {
-      size  = "medium"
-      disks = [100]        # 1 disk
-      ip    = [""]         # 1 network interface
+    rhelvm01 = {       # Small VM with 1 disk and 2 network interfaces
+      disks = [100]    
+      ip    = ["", ""]
     }
   }
 }

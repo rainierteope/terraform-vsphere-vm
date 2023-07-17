@@ -18,6 +18,12 @@ variable "network" {
   description = "Name of the default port group"
 }
 
+variable "folder" {
+  type = string
+  description = "Folder of the VMs"
+  default = null
+}
+
 variable "template" {
   type        = string
   description = "Name of the virtual machine template"
@@ -29,31 +35,15 @@ variable "windows_image" {
   default     = false
 }
 
-variable "hot_add_enabled" {
-  type        = bool
-  description = "Set to true if cpu and memory hot add should be enabled"
-  default     = false
-}
-
 variable "vm_config" {
-  type        = map(object({size = string, disks = list(number), ip = list(string)}))
+  type = map(object({
+    size            = optional(string)
+    disks           = list(number)
+    ip              = optional(list(string))
+    domain          = optional(string, "")
+    gateway         = optional(string, "")
+    dns_servers     = optional(list(string), [])
+    hot_add_enabled = optional(bool, false)
+  }))
   description = "Configuration of the virtual machines"
-}
-
-variable "dns_servers" {
-  type        = list(string)
-  description = "List of DNS servers"
-  default     = []
-}
-
-variable "gateway" {
-  type        = string
-  description = "Default gateway for the virtual machines"
-  default     = ""
-}
-
-variable "domain" {
-  type        = string
-  description = "Domain of the virtual machines"
-  default     = ""
 }

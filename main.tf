@@ -22,24 +22,33 @@ data "vsphere_virtual_machine" "template" {
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
+resource "vsphere_folder" "folder" {
+  count         = var.folder != null ? 1 : 0
+  path          = var.folder
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.dc.id
+}
+
 resource "vsphere_virtual_machine" "vm" {
   for_each = var.vm_config
+  depends_on = [ vsphere_folder.folder ]
 
-  name     = upper(each.key)
-  num_cpus = lookup(local.sizes, each.value.size, "small").cpu
-  memory   = lookup(local.sizes, each.value.size, "small").memory
+  name     = each.key
+  num_cpus = each.value.size == null ? lookup(local.sizes, "small").cpu : lookup(local.sizes, each.value.size).cpu
+  memory   = each.value.size == null ? lookup(local.sizes, "small").memory : lookup(local.sizes, each.value.size).memory
 
   resource_pool_id = data.vsphere_compute_cluster.clus.resource_pool_id
   datastore_id     = data.vsphere_datastore.ds.id
+  folder           = var.folder
 
   firmware                   = data.vsphere_virtual_machine.template.firmware
   hardware_version           = data.vsphere_virtual_machine.template.hardware_version
   guest_id                   = data.vsphere_virtual_machine.template.guest_id
   efi_secure_boot_enabled    = data.vsphere_virtual_machine.template.efi_secure_boot_enabled
-  wait_for_guest_net_timeout = each.value.ip == [] ? 0 : 5
+  wait_for_guest_net_timeout = each.value.ip == null ? 0 : 5
 
-  cpu_hot_add_enabled    = var.hot_add_enabled
-  memory_hot_add_enabled = var.hot_add_enabled
+  cpu_hot_add_enabled    = each.value.hot_add_enabled
+  memory_hot_add_enabled = each.value.hot_add_enabled
 
   dynamic "disk" {
     for_each = each.value.disks
@@ -51,7 +60,7 @@ resource "vsphere_virtual_machine" "vm" {
   }
 
   dynamic "network_interface" {
-    for_each = each.value.ip == [] ? [1] : each.value.ip
+    for_each = each.value.ip != null ? each.value.ip : [1]
     content {
       network_id = data.vsphere_network.pg.id
     }
@@ -63,8 +72,8 @@ resource "vsphere_virtual_machine" "vm" {
       dynamic "linux_options" {
         for_each = var.windows_image == false ? [1] : []
         content {
-          host_name = upper(each.key)
-          domain    = var.domain
+          host_name = each.key
+          domain    = each.value.domain
         }
       }
 
@@ -75,15 +84,15 @@ resource "vsphere_virtual_machine" "vm" {
         }
       }
 
-      ipv4_gateway    = var.gateway
-      dns_server_list = var.dns_servers
+      ipv4_gateway    = each.value.gateway
+      dns_server_list = each.value.dns_servers
 
       dynamic "network_interface" {
-        for_each = each.value.ip
+        for_each = each.value.ip != null ? each.value.ip : [1]
         iterator = network
         content {
-          ipv4_address = network.value == "" ? null : split("/", each.value.ip[network.key])[0]
-          ipv4_netmask = network.value == "" ? null : split("/", each.value.ip[network.key])[1]
+          ipv4_address = each.value.ip != null ? network.value != "" ? split("/", network.value)[0] : null : null
+          ipv4_netmask = each.value.ip != null ? network.value != "" ? split("/", network.value)[1] : null : null
         }
       }
     }
