@@ -27,7 +27,7 @@ touch main.tf
 ```
 
 Inside main.tf, create the following configuration
-```hcl
+```
 module "module_name" {    # Module name can be anything you want
   datacenter      = (Required) The virtual datacenter where the VM will reside in.
   datastore       = (Required) The datastore where the VM files will be stored.
@@ -53,7 +53,7 @@ module "module_name" {    # Module name can be anything you want
 ```
 
 Example vm_config block with all parameters defined
-```hcl
+```
 vm_config = {
   vm01 = {
     size            = "medium"                              # Size of the VM
@@ -68,7 +68,7 @@ vm_config = {
 ```
 
 Example usage with optional values configured
-```hcl
+```
 module "module_name" {
   datacenter      = "AutomationDC"
   datastore       = "Prod-Datastore01"
@@ -101,7 +101,7 @@ module "module_name" {
 ```
 
 Example usage with minimal configuration and no ip address set
-```hcl
+```
 module "module_name" {
   datacenter      = "AutomationDC"
   datastore       = "Prod-Datastore01"
@@ -121,7 +121,7 @@ module "module_name" {
 ```
 
 Available sizes
-```hcl
+```
 small  = 1 vcpu 2gb memory
 medium = 2 vcpu 4gb memory
 large  = 4 vcpu 8gb memory
