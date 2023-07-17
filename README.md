@@ -38,14 +38,17 @@ module "module_name" {    # Module name can be anything you want
   folder          = (Optional) The folder where the virtual machines will be stored.
   vm_config       = (Required) The configuration of each virtual machine. 
 
-  vm_config parameters:
-  disks           = (Required) List of virtual disks sizes.
-  size            = (Optional) The size of the virtual machine. Defaults to small if not set.
-  ip              = (Optional) List of ip addresses and subnet mask in cidr notation. Defaults to 1 network interface if not set.
-  hot_add_enabled = (Optional) Set this parameter to true if cpu and memory hot-add should be enabled. Defaults to false if not set.
-  dns_servers     = (Optional) List of DNS servers which the VMs will use. Defaults to an empty list [] if not set.
-  gateway         = (Optional) The default IPv4 gateway for your VMs. Defaults to "" if not set.
-  domain          = (Optional) The domain of the VM. Defaults to "" if not set.
+###########################################################################################################################################
+##  vm_config parameters:                                                                                                                ##
+##  disks           = (Required) List of virtual disks sizes.                                                                            ##
+##  size            = (Optional) The size of the virtual machine. Defaults to small if not set.                                          ##
+##  ip              = (Optional) List of ip addresses and subnet mask in cidr notation. Defaults to 1 network interface if not set.      ##
+##  hot_add_enabled = (Optional) Set this parameter to true if cpu and memory hot-add should be enabled. Defaults to false if not set.   ##
+##  dns_servers     = (Optional) List of DNS servers which the VMs will use. Defaults to an empty list [] if not set.                    ##
+##  gateway         = (Optional) The default IPv4 gateway for your VMs. Defaults to "" if not set.                                       ##
+##  domain          = (Optional) The domain of the VM. Defaults to "" if not set.                                                        ##
+###########################################################################################################################################
+
 }
 ```
 
