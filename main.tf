@@ -34,8 +34,8 @@ resource "vsphere_virtual_machine" "vm" {
   depends_on = [ vsphere_folder.folder ]
 
   name     = each.key
-  num_cpus = each.value.size == null ? lookup(local.sizes, "small").cpu : lookup(local.sizes, each.value.size).cpu
-  memory   = each.value.size == null ? lookup(local.sizes, "small").memory : lookup(local.sizes, each.value.size).memory
+  num_cpus = each.value.size != null ? lookup(local.sizes, each.value.size, "small").cpu : lookup(local.sizes, "small").cpu
+  memory   = each.value.size != null ? lookup(local.sizes, each.value.size, "small").memory : lookup(local.sizes, "small").memory
 
   resource_pool_id = data.vsphere_compute_cluster.clus.resource_pool_id
   datastore_id     = data.vsphere_datastore.ds.id
