@@ -112,7 +112,7 @@ module "module_name" {
     rhelvm01 = {       # Small VM with 1 disk and 1 network interface
       disks = [50]     
     }
-    rhelvm01 = {       # Small VM with 1 disk and 2 network interfaces
+    rhelvm02 = {       # Small VM with 1 disk and 2 network interfaces
       disks = [100]    
       ip    = ["", ""]
     }
