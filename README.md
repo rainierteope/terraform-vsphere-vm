@@ -87,7 +87,7 @@ module "module_name" {
       dns_servers     = ["192.168.200.200", "8.8.8.8"]        # List of DNS servers for the VM
       hot_add_enabled = true                                  # Enable cpu and memory hot-add for the VM
     }
-    rhelvm01 = {
+    rhelvm02 = {
       size            = "large"                               # Size of the VM
       disks           = [100, 200]                            # List of disks sizes
       ip              = ["", ""]                              # List of IP addresses, set to "" for dhcp
